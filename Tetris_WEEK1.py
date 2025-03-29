@@ -60,8 +60,8 @@ class TetrisApp:
     def new_piece(self):
         self.current_piece = choice(TetrisApp.SHAPES)
         colour_index = randint(1, len(TetrisApp.COlORS) - 1)
-        self.current_piece_colour = TetrisApp.COlORS(colour_index)
-        self.current_piece_x = TetrisApp.BOARD_WIDTH // 2 - len(self.current_piece[0]) // 2
+        self.current_piece_colour = TetrisApp.COlORS[colour_index]
+        self.current_piece_x = TetrisApp.BOARD_WIDTH // 2 - len([self.current_piece[0]]) // 2
 
 
     def draw_tile(self,x,y,color):
@@ -72,8 +72,6 @@ class TetrisApp:
 
         pygame.draw.rect(self.screen, color, rect)
         pygame.draw.rect(self.screen, (128, 128, 128), rect, 1)
-
-        pygame.display.update()
 
     def handle_input(self):
         for event in pygame.event.get():
@@ -86,13 +84,15 @@ class TetrisApp:
 
     def draw(self):
         self.screen.fill((0, 0, 0))
-        self.draw_tile(0, 0, (0, 0, 255))
 
         if self.current_piece:
-            for _ in self.current_piece:
-                for _ in self.current_piece:
-                    self.draw_tile(self.current_piece_x,0,self.current_piece_colour,1)
-            pygame.display.filp()
+            for y, row in enumerate(self.current_piece):
+                for x, cell in enumerate(row):
+                    if cell:
+                        self.draw_tile(self.current_piece_x + x, self.current_piece_y + y,
+                                       self.current_piece_colour)
+
+        pygame.display.flip()
     def run(self):
         while not self.game_over:
             self.handle_input()
@@ -103,7 +103,6 @@ class TetrisApp:
 def main():
     app = TetrisApp()
     app.run()
-    TetrisApp.draw_tile()
     TetrisApp.draw()
 
 
