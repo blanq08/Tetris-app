@@ -6,6 +6,9 @@ import sys
 # Initialize pygame
 pygame.init()
 
+
+
+
 class TetrisApp:
     TILE_SIZE = 30
     BOARD_WIDTH = 10
@@ -93,12 +96,16 @@ class TetrisApp:
         color_index = randint(1, len(TetrisApp.COLORS) - 1)
         self.current_piece_color = TetrisApp.COLORS[color_index]
         self.current_piece_x = TetrisApp.BOARD_WIDTH // 2 - len(self.current_piece[0]) // 2
+        self.current_piece_y = 0
 
-    # def freeze_piece(self,colour,current_x_pos,current_y_pos):
-    #     """fix the  current piece to the board and check for completed line"""
-    #     #Add piece to the board
-    #     self.board[current_x_pos,current_y_pos] = colour
-    #     print(self.board)
+    def freeze_piece(self):
+        for y, row in enumerate(self.current_piece):
+            for x,cell in enumerate(row):
+                if cell:
+                    self.board[self.current_piece_y + y][self.current_piece_x + x] = \
+                        TetrisApp.COLORS.index(self.current_piece_color)
+        self.new_piece()
+
 
 
 
@@ -126,9 +133,9 @@ class TetrisApp:
     def update(self):
         current_time = pygame.time.get_ticks()
 
-        if current_time - self.drop_time > self.drop_time:
-            self.move(0,1)
-
+        if current_time - self.drop_time > self.drop_speed:
+            if not self.move(0,1):
+                self.freeze_piece()
             self.drop_time = current_time
 
 
@@ -146,7 +153,12 @@ class TetrisApp:
 
     def draw(self):
         self.screen.fill((0,0,0))
-        board = [[0 for _ in range(self.BOARD_WIDTH)] for _ in range(self.BOARD_HEIGHT)]
+
+        for y, row in enumerate(self.board):
+            for x,cell in enumerate(row):
+                if cell:
+                    color = TetrisApp.COLORS[cell]
+                    self.draw_tile(x, y,color)
 
         # 현재 블록 그리기
         if self.current_piece:
