@@ -106,6 +106,9 @@ class TetrisApp:
                 if cell:
                     self.board[self.current_piece_y + y][self.current_piece_x + x] = \
                         TetrisApp.COLORS.index(self.current_piece_color)
+        for check in range(9):
+            if self.board[0][check] != 0:
+                self.game_over = True
         self.clear_lines()
         self.new_piece()
 
@@ -120,6 +123,8 @@ class TetrisApp:
         for _ in range(lines_cleared):
             new_board.insert(0, [0] * len(self.board[0]))
         self.board = new_board
+
+        self.drop_speed -=10
 
     def rotate(self):
         new_piece = [list(row) for row in zip(*self.current_piece)][::-1]
