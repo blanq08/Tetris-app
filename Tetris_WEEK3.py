@@ -74,8 +74,10 @@ class TetrisApp:
                     if (
                             new_x < 0 or
                             real_x >= TetrisApp.BOARD_WIDTH or
-                            real_y >= TetrisApp.BOARD_HEIGHT
+                            real_y >= TetrisApp.BOARD_HEIGHT or
+                            self.board[real_y][real_x] != 0
                     ):
+
                         return True
         return False
 
@@ -104,10 +106,20 @@ class TetrisApp:
                 if cell:
                     self.board[self.current_piece_y + y][self.current_piece_x + x] = \
                         TetrisApp.COLORS.index(self.current_piece_color)
+        self.clear_lines()
         self.new_piece()
 
+    def clear_lines(self):
+        new_board = []
 
+        for row in self.board:
+            if 0 in row:
+                new_board.append(row)
+        lines_cleared = len(self.board) - len(new_board)
 
+        for _ in range(lines_cleared):
+            new_board.insert(0, [0] * len(self.board[0]))
+        self.board = new_board
 
     def rotate(self):
         new_piece = [list(row) for row in zip(*self.current_piece)][::-1]
@@ -128,6 +140,9 @@ class TetrisApp:
                     self.move(1, 0)
                 elif event.key == pygame.K_DOWN:
                     self.move(0, 1)
+                elif event.key == pygame.K_SPACE:
+                    while self.move(0, 1):
+                        pass
 
 
     def update(self):
